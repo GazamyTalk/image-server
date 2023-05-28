@@ -3,6 +3,8 @@ import createSessionMiddleware from "./middlewares/session.middleware";
 import route from "./route";
 import { serverConfig } from "./config/server";
 import errorHandler from "./middlewares/error.middleware";
+import * as service from "./service";
+import path from "path";
 
 const port = serverConfig.port;
 const app = express();
@@ -23,9 +25,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(`${serverConfig.currentServerPath}`, route);
 app.use(errorHandler);
 
+const imagesDirPath =
+    serverConfig.imagesDirPath[0] === '/'
+    ? serverConfig.imagesDirPath
+    : path.join(__dirname, '..', serverConfig.imagesDirPath);
+(async () => await service.copyDefaultImages(
+    path.join(__dirname, '../defaultImages'),  //이거 환경변수로 만들어야 할거같다. 도커에 어떻게...
+    imagesDirPath)
+)();
 
 if ( require.main === module ) {
-    app.listen(port, () => {
+    app.listen(port, async () => {
         console.log(`server is running at port ${port}`);
     })
 }

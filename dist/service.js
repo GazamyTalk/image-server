@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addImageData = exports.getImageData = void 0;
+exports.copyDefaultImages = exports.isExistFile = exports.addImageData = exports.getImageData = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const randomString_1 = __importDefault(require("./utils/randomString"));
@@ -49,6 +49,22 @@ function isExistFile(filename) {
         }
     });
 }
+exports.isExistFile = isExistFile;
+function copyDefaultImages(defaultDir, imagesDir) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield promises_1.default.mkdir(imagesDir, { recursive: true });
+        const files = yield promises_1.default.readdir(defaultDir);
+        const promises = files.map((filename) => __awaiter(this, void 0, void 0, function* () {
+            const srcPath = path_1.default.join(defaultDir, filename);
+            const dstPath = path_1.default.join(imagesDir, filename);
+            if (yield isExistFile(dstPath))
+                return;
+            yield promises_1.default.copyFile(srcPath, dstPath);
+        }));
+        yield Promise.all(promises);
+    });
+}
+exports.copyDefaultImages = copyDefaultImages;
 function generateRandomFilename() {
     return (0, randomString_1.default)(12) + '.png';
 }

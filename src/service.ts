@@ -23,13 +23,29 @@ export async function addImageData(content: Buffer) : Promise<string> {
     return filename;
 }
 
-async function isExistFile(filename: string) : Promise<boolean> {
+export async function isExistFile(filename: string) : Promise<boolean> {
     try {
         await fs.access(filename);
         return true;
     } catch {
         return false;
     }
+}
+
+export async function copyDefaultImages(defaultDir: string, imagesDir: string) {
+    await fs.mkdir(imagesDir, { recursive: true });
+    const files = await fs.readdir(defaultDir);
+    const promises = files.map(async (filename) => {
+
+        const srcPath = path.join(defaultDir, filename);
+        const dstPath = path.join(imagesDir, filename);
+
+        if ( await isExistFile(dstPath) ) return;
+        
+        await fs.copyFile(srcPath, dstPath);
+
+    })
+    await Promise.all(promises);
 }
 
 function generateRandomFilename() : string {
