@@ -2,6 +2,7 @@
 
 # Environment Variables
 - `CURRENT_SERVER_PATH`: path of server. recommended '/images'
+- `IMAGES_DIR_PATH`: path of images directory.
 - `SESSION_STORE_URL`: url of session database.
 - `SESSION_SECRET`: shared secret
 - `SERVER_PORT`: port of server
